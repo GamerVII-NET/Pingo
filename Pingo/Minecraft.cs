@@ -72,11 +72,26 @@ public static class Minecraft
     }
 }
 
+/// <summary>
+/// Stores options to ping a Minecraft server.
+/// </summary>
 public sealed class MinecraftPingOptions
 {
+    /// <summary>
+    /// The server's address.
+    /// </summary>
     public required string Address { get; init; }
 
+    /// <summary>
+    /// The server's port.
+    /// </summary>
+    /// <remarks>
+    /// 19132 is usually for Bedrock servers, and 25565 is usually for Java servers.
+    /// </remarks>
     public required ushort Port { get; init; }
 
+    /// <summary>
+    /// Specifies when should the asynchronous ping operation time out.
+    /// </summary>
     public TimeSpan TimeOut { get; init; } = TimeSpan.FromSeconds(5);
 }
