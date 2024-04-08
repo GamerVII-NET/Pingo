@@ -1,4 +1,4 @@
-﻿namespace Pingo.Java.Protocol;
+﻿namespace Pingo.Networking;
 
 internal interface IOutgoingPacket
 {

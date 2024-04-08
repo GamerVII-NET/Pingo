@@ -2,7 +2,8 @@
 using System.Net.Sockets;
 using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
 using Microsoft.Extensions.Logging.Abstractions;
-using Pingo.Java;
+using Pingo.Networking.Bedrock;
+using Pingo.Networking.Java;
 using Pingo.Status;
 
 namespace Pingo;
@@ -25,13 +26,13 @@ public static class Minecraft
         {
             // According to my made-up statistics there are more Java servers than Bedrock.
             socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            await socket.ConnectAsync(endPoint, source.Token);
         }
         catch (SocketException)
         {
             socket = new Socket(endPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
+            await socket.ConnectAsync(endPoint, source.Token);
         }
-
-        await socket.ConnectAsync(endPoint, source.Token);
 
         switch (socket.ProtocolType)
         {
@@ -41,8 +42,8 @@ public static class Minecraft
                     new SocketConnectionFactoryOptions(),
                     NullLogger.Instance);
 
-                await using var client = new Client(factory.Create(socket));
-                var status = await client.PingAsync(options.Address, options.Port, source.Token);
+                await using var java = new JavaClient(factory.Create(socket));
+                var status = await java.PingAsync(options.Address, options.Port, source.Token);
 
                 return status is not null
                     ? new JavaStatus(status)
@@ -50,13 +51,14 @@ public static class Minecraft
             }
 
             case ProtocolType.Udp:
-                break;
+            {
+                using var bedrock = new BedrockClient(socket);
+                return await bedrock.PingAsync(cancellationToken);
+            }
 
             default:
                 throw new InvalidOperationException("Unknown protocol type.");
         }
-
-        return null;
     }
 }
 

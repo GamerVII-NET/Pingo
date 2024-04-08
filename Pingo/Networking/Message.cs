@@ -1,11 +1,4 @@
-﻿namespace Pingo.Java.Protocol;
-
-internal interface IIngoingPacket<out TSelf> where TSelf : IIngoingPacket<TSelf>
-{
-    public static abstract int Identifier { get; }
-
-    public static abstract TSelf Read(MemoryReader reader);
-}
+﻿namespace Pingo.Networking;
 
 internal sealed record Message(int Identifier, ReadOnlyMemory<byte> Memory)
 {

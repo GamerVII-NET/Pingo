@@ -2,13 +2,13 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Connections;
-using Pingo.Java.Protocol;
-using Pingo.Java.Protocol.Components;
-using Pingo.Java.Protocol.Packets;
+using Pingo.Networking.Java.Protocol;
+using Pingo.Networking.Java.Protocol.Components;
+using Pingo.Networking.Java.Protocol.Packets;
 
-namespace Pingo.Java;
+namespace Pingo.Networking.Java;
 
-internal sealed class Client(ConnectionContext connection) : IAsyncDisposable
+internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposable
 {
     private readonly JsonSerializerOptions options =
         new JsonSerializerOptions

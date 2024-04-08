@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Pingo.Java.Protocol.Components;
+namespace Pingo.Networking.Java.Protocol.Components;
 
 internal sealed class ServerStatus
 {

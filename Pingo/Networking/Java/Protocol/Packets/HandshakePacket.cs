@@ -1,4 +1,4 @@
-﻿namespace Pingo.Java.Protocol.Packets;
+﻿namespace Pingo.Networking.Java.Protocol.Packets;
 
 internal sealed class HandshakePacket : IOutgoingPacket
 {

@@ -1,4 +1,4 @@
-﻿using Pingo.Java.Protocol.Components;
+﻿using Pingo.Networking.Java.Protocol.Components;
 
 namespace Pingo.Status;
 

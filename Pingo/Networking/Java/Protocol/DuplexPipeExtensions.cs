@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Numerics;
 
-namespace Pingo.Java.Protocol;
+namespace Pingo.Networking.Java.Protocol;
 
 internal static class DuplexPipeExtensions
 {
