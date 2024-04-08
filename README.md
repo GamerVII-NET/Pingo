@@ -1,6 +1,6 @@
 # Pingo
 A simple library to ping Minecraft: Java/Bedrock edition servers that supports almost all versions.
-
+> ⚠️ Currently still working on implementing older versions.
 ## Usage
 
 ```cs
