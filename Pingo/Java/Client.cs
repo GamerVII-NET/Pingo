@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Connections;
 using Pingo.Java.Protocol;
+using Pingo.Java.Protocol.Components;
 using Pingo.Java.Protocol.Packets;
 
 namespace Pingo.Java;

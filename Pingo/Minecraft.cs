@@ -11,6 +11,13 @@ public static class Minecraft
 {
     public static async Task<StatusBase?> PingAsync(MinecraftPingOptions options, CancellationToken cancellationToken = default)
     {
+        using var timeOutSource = new CancellationTokenSource();
+        timeOutSource.CancelAfter(options.TimeOut);
+
+        using var source = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            timeOutSource.Token);
+
         Socket? socket;
         var endPoint = new IPEndPoint(IPAddress.Parse(options.Address), options.Port);
 
@@ -24,28 +31,29 @@ public static class Minecraft
             socket = new Socket(endPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
         }
 
-        await socket.ConnectAsync(endPoint, cancellationToken);
+        await socket.ConnectAsync(endPoint, source.Token);
 
-        if (socket.ProtocolType is ProtocolType.Tcp)
+        switch (socket.ProtocolType)
         {
-            using var factory = new SocketConnectionContextFactory(
-                new SocketConnectionFactoryOptions(),
-                NullLogger.Instance);
+            case ProtocolType.Tcp:
+            {
+                using var factory = new SocketConnectionContextFactory(
+                    new SocketConnectionFactoryOptions(),
+                    NullLogger.Instance);
 
-            await using var client = new Client(factory.Create(socket));
-            var status = await client.PingAsync(options.Address, options.Port, cancellationToken);
+                await using var client = new Client(factory.Create(socket));
+                var status = await client.PingAsync(options.Address, options.Port, source.Token);
 
-            return status is not null
-                ? new JavaStatus(status)
-                : null;
-        }
-        else if (socket.ProtocolType is ProtocolType.Udp)
-        {
+                return status is not null
+                    ? new JavaStatus(status)
+                    : null;
+            }
 
-        }
-        else
-        {
-            throw new InvalidOperationException("Unknown protocol type.");
+            case ProtocolType.Udp:
+                break;
+
+            default:
+                throw new InvalidOperationException("Unknown protocol type.");
         }
 
         return null;
@@ -57,4 +65,6 @@ public sealed class MinecraftPingOptions
     public required string Address { get; init; }
 
     public required ushort Port { get; init; }
+
+    public TimeSpan TimeOut { get; init; } = TimeSpan.FromSeconds(5);
 }
