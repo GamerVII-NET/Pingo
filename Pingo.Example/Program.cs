@@ -11,10 +11,10 @@ var status = await Minecraft.PingAsync(options);
 
 if (status is BedrockStatus bedrock)
 {
-    // This is a Minecraft: Bedrock edition server!
+    Console.WriteLine(string.Join(", ", bedrock.MessagesOfTheDay));
 }
 else
 {
     var java = (JavaStatus?) status;
-    // This is a Minecraft: Java edition server!
+    Console.WriteLine(string.Join(", ", java!.MessagesOfTheDay));
 }

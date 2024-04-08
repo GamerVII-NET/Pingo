@@ -4,7 +4,7 @@ namespace Pingo.Status;
 
 public sealed class JavaStatus : StatusBase
 {
-    public string MessageOfTheDay { get; init; }
+    public string[] MessagesOfTheDay { get; init; }
 
     public int OnlinePlayers { get; init; }
 
@@ -18,7 +18,12 @@ public sealed class JavaStatus : StatusBase
 
     internal JavaStatus(ServerStatus status)
     {
-        MessageOfTheDay = status.Description.Text;
+        MessagesOfTheDay =
+        [
+            ..status.Description.Extra?.Select(extra => extra.Text),
+            status.Description.Text
+        ];
+
         OnlinePlayers = status.PlayerInformation.Online;
         MaximumPlayers = status.PlayerInformation.Max;
         Protocol = status.Version.Protocol;
