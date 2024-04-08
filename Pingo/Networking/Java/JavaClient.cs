@@ -1,6 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Connections;
 using Pingo.Networking.Java.Protocol;
 using Pingo.Networking.Java.Protocol.Components;
@@ -10,21 +8,6 @@ namespace Pingo.Networking.Java;
 
 internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposable
 {
-    private readonly JsonSerializerOptions options =
-        new JsonSerializerOptions
-        {
-            AllowTrailingCommas = true,
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            NumberHandling = JsonNumberHandling.AllowReadingFromString,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters =
-            {
-                new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower)
-            }
-        };
-
     public async Task<ServerStatus?> PingAsync(
         string address,
         ushort port,
@@ -51,7 +34,9 @@ internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposabl
         var response = message?.As<StatusResponsePacket>();
 
         return response is not null
-            ? JsonSerializer.Deserialize<ServerStatus>(response.Status, options)
+            ? JsonSerializer.Deserialize(
+                response.Status,
+                SourceGenerationContext.Default.ServerStatus)
             : null;
     }
 

@@ -38,6 +38,31 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
             span[position..(position += sizeof(ushort))]);
     }
 
+    public int ReadVariableInteger()
+    {
+        var numbersRead = 0;
+        var result = 0;
+
+        byte read;
+
+        do
+        {
+            read = span[position++];
+
+            var value = read & 0b01111111;
+            result |= value << 7 * numbersRead;
+
+            numbersRead++;
+
+            if (numbersRead > 5)
+            {
+                throw new InvalidOperationException("Variable integer is too big.");
+            }
+        } while ((read & 0b10000000) != 0);
+
+        return result;
+    }
+
     public long ReadLong()
     {
         return BinaryPrimitives.ReadInt64BigEndian(
@@ -89,9 +114,9 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
         return new IPEndPoint(address, port);
     }
 
-    public string ReadVariableString()
+    public string ReadVariableString(bool java)
     {
-        var length = ReadUnsignedShort();
+        var length = java ? ReadVariableInteger() : ReadUnsignedShort();
         return Encoding.UTF8.GetString(span[position..(position += length)]);
     }
 

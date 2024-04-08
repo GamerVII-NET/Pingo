@@ -20,7 +20,7 @@ internal sealed class UnconnectedPongPacket : IIngoingPacket<UnconnectedPongPack
         {
             Time = time,
             Server = server,
-            Message = reader.ReadVariableString()
+            Message = reader.ReadVariableString(false)
         };
     }
 }

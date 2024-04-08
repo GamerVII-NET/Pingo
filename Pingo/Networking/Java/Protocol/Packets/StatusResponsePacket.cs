@@ -10,7 +10,7 @@ internal sealed class StatusResponsePacket : IIngoingPacket<StatusResponsePacket
     {
         return new StatusResponsePacket
         {
-            Status = reader.ReadVariableString()
+            Status = reader.ReadVariableString(true)
         };
     }
 }
