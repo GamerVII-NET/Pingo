@@ -8,8 +8,18 @@ using Pingo.Status;
 
 namespace Pingo;
 
+/// <summary>
+/// A helper static class that provides methods for pinging a Minecraft server.
+/// </summary>
 public static class Minecraft
 {
+    /// <summary>
+    /// Attempts to ping a Minecraft server.
+    /// </summary>
+    /// <param name="options">Options for the asynchronous ping operation.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous ping operation, which wraps the status of the server.</returns>
+    /// <exception cref="InvalidOperationException">Unknown protocol type.</exception>
     public static async Task<StatusBase?> PingAsync(MinecraftPingOptions options, CancellationToken cancellationToken = default)
     {
         using var timeOutSource = new CancellationTokenSource();
