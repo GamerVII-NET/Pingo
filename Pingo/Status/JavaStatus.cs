@@ -41,7 +41,7 @@ public sealed class JavaStatus : StatusBase
     {
         MessagesOfTheDay =
         [
-            ..status.Description.Extra?.Select(extra => extra.Text),
+            ..status.Description.Extra.Select(extra => extra.Text),
             status.Description.Text
         ];
 

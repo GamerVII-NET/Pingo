@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Pingo.Converters;
 using Pingo.Networking.Java.Protocol.Components;
 
 namespace Pingo.Networking;
@@ -13,6 +14,6 @@ namespace Pingo.Networking;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     Converters =
     [
-        typeof(JsonStringEnumConverter<Color>)
+        typeof(ColorConverter)
     ])]
 internal sealed partial class SourceGenerationContext : JsonSerializerContext;

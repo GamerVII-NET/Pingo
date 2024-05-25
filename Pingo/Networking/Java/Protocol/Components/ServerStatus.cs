@@ -1,4 +1,5 @@
 ﻿using System.Text.Json.Serialization;
+using Pingo.Converters;
 
 namespace Pingo.Networking.Java.Protocol.Components;
 
@@ -9,9 +10,18 @@ internal sealed class ServerStatus
     [JsonPropertyName("players")]
     public required PlayerInformation PlayerInformation { get; set; }
 
-    public required ChatMessage Description { get; set; }
+    [JsonConverter(typeof(DescriptionConverter))]
+    public required Description Description { get; set; }
 
     public string Favicon { get; set; } = string.Empty;
+}
+
+public class Description
+{
+    [JsonPropertyName("text")]
+    public string Text { get; set; } = string.Empty;
+
+    [JsonPropertyName("extra")] public ChatMessage[] Extra { get; set; } = [];
 }
 
 internal sealed class ServerVersion
