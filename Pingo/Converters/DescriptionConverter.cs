@@ -53,7 +53,6 @@ public class DescriptionConverter : JsonConverter<Description>
 
     public override void Write(Utf8JsonWriter writer, Description description, JsonSerializerOptions options)
     {
-        // Implement your custom logic to serialize a Description instance into a JSON.
-        throw new NotImplementedException();
+        // Ignore
     }
 }
