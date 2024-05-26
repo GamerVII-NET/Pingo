@@ -8,40 +8,40 @@ public sealed class BedrockStatus : StatusBase
     /// <summary>
     /// Stores the game edition of the server, for example Minecraft: Education edition.
     /// </summary>
-    public required string Edition { get; init; }
+    public string Edition { get; set; } = null!;
 
     /// <summary>
     /// Stores possibly multiple lines of MOTDs.
     /// </summary>
-    public required string[] MessagesOfTheDay { get; init; }
+    public string[] MessagesOfTheDay { get; set; } = null!;
 
     /// <summary>
     /// Stores the protocol version of the server.
     /// </summary>
-    public required int Protocol { get; init; }
+    public int Protocol { get; set; }
 
     /// <summary>
     /// Stores the game version that is supported by the server.
     /// </summary>
-    public required string Version { get; init; }
+    public string Version { get; set; } = null!;
 
     /// <summary>
     /// Stores the online amount of players.
     /// </summary>
-    public int OnlinePlayers { get; init; }
+    public int OnlinePlayers { get; set; }
 
     /// <summary>
     /// Stores the maximum amount of players.
     /// </summary>
-    public int MaximumPlayers { get; init; }
+    public int MaximumPlayers { get; set; }
 
     /// <summary>
     /// Stores the server's unique identifier.
     /// </summary>
-    public required long ServerIdentifier { get; init; }
+    public long ServerIdentifier { get; set; }
 
     /// <summary>
     /// Stores the server's game mode.
     /// </summary>
-    public required string GameMode { get; init; }
+    public string GameMode { get; set; } = null!;
 }

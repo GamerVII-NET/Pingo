@@ -2,15 +2,15 @@
 
 internal sealed class UnconnectedPongPacket : IIngoingPacket<UnconnectedPongPacket>
 {
-    public static int Identifier => 0x1C;
+    public int Identifier => 0x1C;
 
-    public required long Time { get; init; }
+    public long Time { get; set; }
 
-    public required long Server { get; init; }
+    public long Server { get; set; }
 
-    public required string Message { get; init; }
+    public string Message { get; set; }
 
-    public static UnconnectedPongPacket Read(MemoryReader reader)
+    public UnconnectedPongPacket Read(MemoryReader reader)
     {
         var time = reader.ReadLong();
         var server = reader.ReadLong();

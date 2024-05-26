@@ -1,16 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <Nullable>enable</Nullable>
-        <PublishAot>true</PublishAot>
-        <IsAotCompatible>true</IsAotCompatible>
-        <StripSymbols>false</StripSymbols>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+      <PackageReference Include="Microsoft.AspNetCore.Connections.Abstractions" Version="8.0.5" />
+      <PackageReference Include="System.Text.Json" Version="8.0.3" />
     </ItemGroup>
 
 </Project>

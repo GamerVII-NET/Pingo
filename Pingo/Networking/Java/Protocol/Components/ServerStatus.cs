@@ -5,13 +5,13 @@ namespace Pingo.Networking.Java.Protocol.Components;
 
 internal sealed class ServerStatus
 {
-    public required ServerVersion Version { get; set; }
+    public ServerVersion Version { get; set; }
 
     [JsonPropertyName("players")]
-    public required PlayerInformation PlayerInformation { get; set; }
+    public PlayerInformation PlayerInformation { get; set; }
 
     [JsonConverter(typeof(DescriptionConverter))]
-    public required Description Description { get; set; }
+    public Description Description { get; set; }
 
     public string Favicon { get; set; } = string.Empty;
 }
@@ -26,14 +26,14 @@ public class Description
 
 internal sealed class ServerVersion
 {
-    public required string Name { get; set; }
+    public string Name { get; set; }
 
-    public required int Protocol { get; set; }
+    public int Protocol { get; set; }
 }
 
 internal sealed class PlayerInformation
 {
-    public required int Max { get; set; }
+    public int Max { get; set; }
 
-    public required int Online { get; set; }
+    public int Online { get; set; }
 }

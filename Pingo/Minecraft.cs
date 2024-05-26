@@ -1,7 +1,9 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Sockets;
-using Microsoft.AspNetCore.Server.Kestrel.Transport.Sockets;
-using Microsoft.Extensions.Logging.Abstractions;
+using System.Threading;
+using System.Threading.Tasks;
+using Pingo.Helpers;
 using Pingo.Networking.Bedrock;
 using Pingo.Networking.Java;
 using Pingo.Status;
@@ -36,21 +38,19 @@ public static class Minecraft
         {
             // According to my made-up statistics there are more Java servers than Bedrock.
             socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            await socket.ConnectAsync(endPoint, source.Token);
+            await socket.ConnectAsync(endPoint);
         }
         catch (SocketException)
         {
             socket = new Socket(endPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            await socket.ConnectAsync(endPoint, source.Token);
+            await socket.ConnectAsync(endPoint);
         }
 
         switch (socket.ProtocolType)
         {
             case ProtocolType.Tcp:
             {
-                using var factory = new SocketConnectionContextFactory(
-                    new SocketConnectionFactoryOptions(),
-                    NullLogger.Instance);
+                using var factory = new SocketConnectionContextFactory();
 
                 await using var java = new JavaClient(factory.Create(socket));
                 var status = await java.PingAsync(options.Address, options.Port, source.Token);
@@ -80,7 +80,7 @@ public sealed class MinecraftPingOptions
     /// <summary>
     /// The server's address.
     /// </summary>
-    public required string Address { get; init; }
+    public string Address { get; set; }
 
     /// <summary>
     /// The server's port.
@@ -88,10 +88,10 @@ public sealed class MinecraftPingOptions
     /// <remarks>
     /// 19132 is usually for Bedrock servers, and 25565 is usually for Java servers.
     /// </remarks>
-    public required ushort Port { get; init; }
+    public ushort Port { get; set; }
 
     /// <summary>
     /// Specifies when should the asynchronous ping operation time out.
     /// </summary>
-    public TimeSpan TimeOut { get; init; } = TimeSpan.FromSeconds(5);
+    public TimeSpan TimeOut { get; set; } = TimeSpan.FromSeconds(5);
 }

@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections;
 using Pingo.Networking.Java.Protocol;
 using Pingo.Networking.Java.Protocol.Components;
@@ -30,8 +33,8 @@ internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposabl
             await connection.Transport.WriteAsync(packet);
         }
 
-        var message = await connection.Transport.ReadAsync(cancellationToken);
-        var response = message?.As<StatusResponsePacket>();
+        Message? message = await connection.Transport.ReadAsync(cancellationToken);
+        var response = message?.As(new StatusResponsePacket());
 
         return response is not null
             ? JsonSerializer.Deserialize(

@@ -1,4 +1,5 @@
-﻿using Pingo.Networking.Java.Protocol.Components;
+﻿using System.Linq;
+using Pingo.Networking.Java.Protocol.Components;
 
 namespace Pingo.Status;
 
@@ -10,32 +11,32 @@ public sealed class JavaStatus : StatusBase
     /// <summary>
     /// Stores possibly multiple lines of MOTDs.
     /// </summary>
-    public string[] MessagesOfTheDay { get; init; }
+    public string[] MessagesOfTheDay { get; set; }
 
     /// <summary>
     /// Stores the online amount of players.
     /// </summary>
-    public int OnlinePlayers { get; init; }
+    public int OnlinePlayers { get; set; }
 
     /// <summary>
     /// Stores the maximum amount of players.
     /// </summary>
-    public int MaximumPlayers { get; init; }
+    public int MaximumPlayers { get; set; }
 
     /// <summary>
     /// Stores the protocol version of the server.
     /// </summary>
-    public int Protocol { get; init; }
+    public int Protocol { get; set; }
 
     /// <summary>
     /// Stores the server software's name of the server.
     /// </summary>
-    public string Name { get; init; }
+    public string Name { get; set; }
 
     /// <summary>
     /// Stores the server's icon encoded in base-64.
     /// </summary>
-    public string Favicon { get; init; }
+    public string Favicon { get; set; }
 
     internal JavaStatus(ServerStatus status)
     {

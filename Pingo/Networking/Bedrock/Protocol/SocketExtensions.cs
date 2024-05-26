@@ -1,4 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Pingo.Networking.Bedrock.Protocol;
 
@@ -9,7 +12,11 @@ internal static class SocketExtensions
         CancellationToken cancellationToken)
     {
         var memory = new byte[1500].AsMemory();
-        memory = memory[..await socket.ReceiveAsync(memory, cancellationToken)];
+
+        var items = await socket.ReceiveAsync(memory, SocketFlags.None, cancellationToken);
+
+        memory = memory[..items];
+
         return new Message(memory.Span[0], memory[1..]);
     }
 
@@ -18,7 +25,7 @@ internal static class SocketExtensions
         IOutgoingPacket packet,
         CancellationToken cancellationToken)
     {
-        await socket.SendAsync(Write(packet), cancellationToken);
+        await socket.SendAsync(Write(packet), SocketFlags.None, cancellationToken);
 
         return;
 
