@@ -11,7 +11,7 @@ internal sealed class ServerStatus
     public PlayerInformation PlayerInformation { get; set; }
 
     [JsonConverter(typeof(DescriptionConverter))]
-    public Description Description { get; set; }
+    public Description? Description { get; set; }
 
     public string Favicon { get; set; } = string.Empty;
 }
