@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
+using DnsClient;
 using Pingo.Helpers;
 using Pingo.Networking.Bedrock;
 using Pingo.Networking.Java;
@@ -13,8 +15,7 @@ namespace Pingo;
 /// <summary>
 /// A helper static class that provides methods for pinging a Minecraft server.
 /// </summary>
-public static class Minecraft
-{
+public static class Minecraft {
     /// <summary>
     /// Attempts to ping a Minecraft server.
     /// </summary>
@@ -22,46 +23,55 @@ public static class Minecraft
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous ping operation, which wraps the status of the server.</returns>
     /// <exception cref="InvalidOperationException">Unknown protocol type.</exception>
-    public static async Task<StatusBase?> PingAsync(MinecraftPingOptions options, CancellationToken cancellationToken = default)
-    {
+    public static async Task<StatusBase?> PingAsync(MinecraftPingOptions options, CancellationToken cancellationToken = default) {
         using var timeOutSource = new CancellationTokenSource();
         timeOutSource.CancelAfter(options.TimeOut);
 
-        using var source = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            timeOutSource.Token);
+        using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeOutSource.Token);
+
+        if (!IPAddress.TryParse(options.Address, out IPAddress ipAddress)) {
+            var addresses = await Dns.GetHostAddressesAsync(options.Address);
+            if (addresses.Length == 0) {
+                throw new InvalidOperationException("Unable to resolve domain to an IP address.");
+            }
+
+            ipAddress = addresses[0];
+
+            if (options.Port == 0) {
+                var lookup = new LookupClient();
+                var result = await lookup.QueryAsync($"_minecraft._tcp.{options.Address}", QueryType.SRV);
+                var srvRecord = result.Answers.SrvRecords().FirstOrDefault();
+                if (srvRecord != null) {
+                    options.Port = srvRecord.Port;
+                } else {
+                    throw new InvalidOperationException("Unable to resolve SRV record to get the port.");
+                }
+            }
+        }
+
+        var endPoint = new IPEndPoint(ipAddress, options.Port);
 
         Socket? socket;
-        var endPoint = new IPEndPoint(IPAddress.Parse(options.Address), options.Port);
 
-        try
-        {
-            // According to my made-up statistics there are more Java servers than Bedrock.
+        try {
             socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             await socket.ConnectAsync(endPoint);
-        }
-        catch (SocketException)
-        {
+        } catch (SocketException) {
             socket = new Socket(endPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
             await socket.ConnectAsync(endPoint);
         }
 
-        switch (socket.ProtocolType)
-        {
-            case ProtocolType.Tcp:
-            {
-                using var factory = new SocketConnectionContextFactory();
+        switch (socket.ProtocolType) {
+            case ProtocolType.Tcp: {
+                await using var factory = new SocketConnectionContextFactory();
 
                 await using var java = new JavaClient(factory.Create(socket));
                 var status = await java.PingAsync(options.Address, options.Port, source.Token);
 
-                return status is not null
-                    ? new JavaStatus(status)
-                    : null;
+                return status is not null ? new JavaStatus(status) : null;
             }
 
-            case ProtocolType.Udp:
-            {
+            case ProtocolType.Udp: {
                 using var bedrock = new BedrockClient(socket);
                 return await bedrock.PingAsync(cancellationToken);
             }
@@ -75,8 +85,7 @@ public static class Minecraft
 /// <summary>
 /// Stores options to ping a Minecraft server.
 /// </summary>
-public sealed class MinecraftPingOptions
-{
+public sealed class MinecraftPingOptions {
     /// <summary>
     /// The server's address.
     /// </summary>
