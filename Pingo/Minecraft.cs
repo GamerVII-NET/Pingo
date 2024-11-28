@@ -32,7 +32,7 @@ public static class Minecraft
 
         using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeOutSource.Token);
 
-        if (!IPAddress.TryParse(options.Address, out IPAddress ipAddress))
+        if (!IPAddress.TryParse(options.Address, out var ipAddress))
         {
             var addresses = await Dns.GetHostAddressesAsync(options.Address);
             if (addresses.Length == 0)
@@ -45,7 +45,7 @@ public static class Minecraft
             if (options.Port == 0)
             {
                 var lookup = new LookupClient();
-                var result = await lookup.QueryAsync($"_minecraft._tcp.{options.Address}", QueryType.SRV);
+                var result = await lookup.QueryAsync($"_minecraft._tcp.{options.Address}", QueryType.SRV, cancellationToken: source.Token);
                 var srvRecord = result.Answers.SrvRecords().FirstOrDefault();
                 if (srvRecord != null)
                 {

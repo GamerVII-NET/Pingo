@@ -3,7 +3,7 @@ using Pingo.Status;
 
 var options = new MinecraftPingOptions
 {
-    Address = "127.0.0.1",
+    Address = "applecraft.online",
     Port = 25565
 };
 
