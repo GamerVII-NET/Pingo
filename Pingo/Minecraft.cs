@@ -39,12 +39,12 @@ public static class Minecraft
         try
         {
             socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            await socket.ConnectAsync(endPoint);
+            await ConnectWithCancellationAsync(socket, endPoint, source.Token);
         }
         catch (SocketException)
         {
             socket = new Socket(endPoint.AddressFamily, SocketType.Dgram, ProtocolType.Udp);
-            await socket.ConnectAsync(endPoint);
+            await ConnectWithCancellationAsync(socket, endPoint, source.Token);
         }
 
         switch (socket.ProtocolType)
@@ -67,6 +67,19 @@ public static class Minecraft
 
             default:
                 throw new InvalidOperationException("Unknown protocol type.");
+        }
+    }
+
+    private static async Task ConnectWithCancellationAsync(Socket socket, EndPoint endPoint, CancellationToken token)
+    {
+        await using var registration = token.Register(socket.Close);
+        try
+        {
+            await socket.ConnectAsync(endPoint);
+        }
+        catch (ObjectDisposedException) when (token.IsCancellationRequested)
+        {
+            throw new SocketException();
         }
     }
 
