@@ -32,33 +32,7 @@ public static class Minecraft
 
         using var source = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeOutSource.Token);
 
-        if (!IPAddress.TryParse(options.Address, out var ipAddress))
-        {
-            var addresses = await Dns.GetHostAddressesAsync(options.Address);
-            if (addresses.Length == 0)
-            {
-                throw new InvalidOperationException("Unable to resolve domain to an IP address.");
-            }
-
-            ipAddress = addresses[0];
-
-            if (options.Port == 0)
-            {
-                var lookup = new LookupClient();
-                var result = await lookup.QueryAsync($"_minecraft._tcp.{options.Address}", QueryType.SRV, cancellationToken: source.Token);
-                var srvRecord = result.Answers.SrvRecords().FirstOrDefault();
-                if (srvRecord != null)
-                {
-                    options.Port = srvRecord.Port;
-                }
-                else
-                {
-                    throw new InvalidOperationException("Unable to resolve SRV record to get the port.");
-                }
-            }
-        }
-
-        var endPoint = new IPEndPoint(ipAddress, options.Port);
+        var endPoint = await ParseEndpointAsync(options, source.Token);
 
         Socket? socket;
 
@@ -94,6 +68,39 @@ public static class Minecraft
             default:
                 throw new InvalidOperationException("Unknown protocol type.");
         }
+    }
+
+    private static async Task<IPEndPoint> ParseEndpointAsync(MinecraftPingOptions options, CancellationToken token)
+    {
+        if (!IPAddress.TryParse(options.Address, out var ipAddress))
+        {
+            var addresses = await Dns.GetHostAddressesAsync(options.Address);
+            if (addresses.Length == 0)
+            {
+                throw new InvalidOperationException("Unable to resolve domain to an IP address.");
+            }
+
+            ipAddress = addresses[0];
+
+            if (options.Port == 0)
+            {
+                var lookup = new LookupClient();
+                var result = await lookup.QueryAsync($"_minecraft._tcp.{options.Address}", QueryType.SRV, cancellationToken: token);
+                var srvRecord = result.Answers.SrvRecords().FirstOrDefault();
+                if (srvRecord != null)
+                {
+                    options.Port = srvRecord.Port;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unable to resolve SRV record to get the port.");
+                }
+            }
+        }
+
+        var endPoint = new IPEndPoint(ipAddress, options.Port);
+
+        return endPoint;
     }
 }
 
