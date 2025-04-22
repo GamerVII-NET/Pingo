@@ -30,6 +30,11 @@ public sealed class ChatMessage
     // Это свойство будет десериализовать вложенные объекты
     [JsonPropertyName("extra")]
     public ChatMessage[]? Extra { get; set; }
+
+    public static ChatMessage FromString(string text)
+    {
+        return new ChatMessage { Text = text };
+    }
 }
 
 public enum Color
