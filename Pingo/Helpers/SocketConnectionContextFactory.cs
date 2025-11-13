@@ -7,11 +7,6 @@ namespace Pingo.Helpers;
 
 internal class SocketConnectionContextFactory : IAsyncDisposable, IDisposable
 {
-    public ConnectionContext Create(Socket socket)
-    {
-        return new SocketConnectionContext(socket);
-    }
-
     public async ValueTask DisposeAsync()
     {
         await Task.CompletedTask;
@@ -20,5 +15,10 @@ internal class SocketConnectionContextFactory : IAsyncDisposable, IDisposable
     public void Dispose()
     {
         // TODO release managed resources here
+    }
+
+    public ConnectionContext Create(Socket socket)
+    {
+        return new SocketConnectionContext(socket);
     }
 }

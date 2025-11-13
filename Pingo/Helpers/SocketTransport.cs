@@ -8,11 +8,11 @@ namespace Pingo.Helpers;
 
 internal class SocketTransport : IDuplexPipe
 {
-    private readonly Socket socket;
-    private readonly Pipe inputPipe;
-    private readonly Pipe outputPipe;
     private readonly CancellationTokenSource cancellationTokenSource;
     private readonly TaskCompletionSource<object> completionSource;
+    private readonly Pipe inputPipe;
+    private readonly Pipe outputPipe;
+    private readonly Socket socket;
 
     public SocketTransport(Socket socket)
     {
@@ -40,21 +40,15 @@ internal class SocketTransport : IDuplexPipe
         {
             while (!cancellationTokenSource.Token.IsCancellationRequested)
             {
-                Memory<byte> memory = writer.GetMemory(4096);
-                int bytesRead = await socket.ReceiveAsync(memory, SocketFlags.None, cancellationTokenSource.Token);
+                var memory = writer.GetMemory(4096);
+                var bytesRead = await socket.ReceiveAsync(memory, SocketFlags.None, cancellationTokenSource.Token);
 
-                if (bytesRead == 0)
-                {
-                    break;
-                }
+                if (bytesRead == 0) break;
 
                 writer.Advance(bytesRead);
                 var result = await writer.FlushAsync(cancellationTokenSource.Token);
 
-                if (result.IsCompleted)
-                {
-                    break;
-                }
+                if (result.IsCompleted) break;
             }
 
             writer.Complete();
@@ -76,15 +70,10 @@ internal class SocketTransport : IDuplexPipe
                 var result = await reader.ReadAsync(cancellationTokenSource.Token);
                 var buffer = result.Buffer;
 
-                if (buffer.IsEmpty && result.IsCompleted)
-                {
-                    break;
-                }
+                if (buffer.IsEmpty && result.IsCompleted) break;
 
                 foreach (var segment in buffer)
-                {
                     await socket.SendAsync(segment, SocketFlags.None, cancellationTokenSource.Token);
-                }
 
                 reader.AdvanceTo(buffer.End);
             }
@@ -105,7 +94,9 @@ internal class SocketTransport : IDuplexPipe
         {
             socket.Shutdown(SocketShutdown.Both);
         }
-        catch (SocketException) { }
+        catch (SocketException)
+        {
+        }
 
         socket.Close();
         socket.Dispose();

@@ -2,9 +2,8 @@
 
 internal sealed class StatusResponsePacket : IIngoingPacket<StatusResponsePacket>
 {
-    public int Identifier => 0x00;
-
     public string Status { get; set; }
+    public int Identifier => 0x00;
 
     public StatusResponsePacket Read(MemoryReader reader)
     {

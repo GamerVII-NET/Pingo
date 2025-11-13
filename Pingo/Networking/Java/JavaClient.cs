@@ -11,6 +11,11 @@ namespace Pingo.Networking.Java;
 
 internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposable
 {
+    public async ValueTask DisposeAsync()
+    {
+        await connection.DisposeAsync();
+    }
+
     public async Task<ServerStatus?> PingAsync(
         string address,
         ushort port,
@@ -28,12 +33,9 @@ internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposabl
             new StatusRequestPacket()
         ];
 
-        foreach (var packet in initial)
-        {
-            await connection.Transport.WriteAsync(packet);
-        }
+        foreach (var packet in initial) await connection.Transport.WriteAsync(packet);
 
-        Message? message = await connection.Transport.ReadAsync(cancellationToken);
+        var message = await connection.Transport.ReadAsync(cancellationToken);
         var response = message?.As(new StatusResponsePacket());
 
         return response is not null
@@ -41,10 +43,5 @@ internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposabl
                 response.Status,
                 SourceGenerationContext.Default.ServerStatus)
             : null;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await connection.DisposeAsync();
     }
 }

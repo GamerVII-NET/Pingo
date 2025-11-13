@@ -3,12 +3,10 @@ using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.IO.Pipelines;
-using System.Numerics;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Pingo.Networking.Java.Protocol;
-
 
 internal static class DuplexPipeExtensions
 {
@@ -36,10 +34,8 @@ internal static class DuplexPipeExtensions
                 if (result.IsCompleted)
                 {
                     if (buffer.Length > 0)
-                    {
                         // The message is incomplete and there's no more data to process.
                         throw new InvalidDataException("Incomplete message.");
-                    }
 
                     break;
                 }
@@ -59,16 +55,11 @@ internal static class DuplexPipeExtensions
 
             if (!reader.TryReadVariableInteger(out var length)
                 || !reader.TryReadVariableInteger(out var identifier))
-            {
                 return false;
-            }
 
             var padding = VariableInteger.GetBytesCount(identifier);
 
-            if (!reader.TryReadExact(length - padding, out var payload))
-            {
-                return false;
-            }
+            if (!reader.TryReadExact(length - padding, out var payload)) return false;
 
             message = new Message(identifier, payload.ToArray());
             buffer = buffer.Slice(length + padding);
@@ -110,7 +101,8 @@ internal static class DuplexPipeExtensions
 
 internal static class SequenceReaderExtensions
 {
-    public static bool TryReadExact(this ref SequenceReader<byte> reader, int count, out ReadOnlySequence<byte> sequence)
+    public static bool TryReadExact(this ref SequenceReader<byte> reader, int count,
+        out ReadOnlySequence<byte> sequence)
     {
         if (reader.Remaining < count)
         {
@@ -140,14 +132,11 @@ internal static class SequenceReaderExtensions
             }
 
             var temporaryValue = read & 0b01111111;
-            result |= temporaryValue << 7 * numbersRead;
+            result |= temporaryValue << (7 * numbersRead);
 
             numbersRead++;
 
-            if (numbersRead <= 5)
-            {
-                continue;
-            }
+            if (numbersRead <= 5) continue;
 
             value = default;
             return false;
@@ -162,18 +151,19 @@ internal static class VariableInteger
 {
     public static int GetBytesCount(int value)
     {
-        return (LeadingZeroCount((uint) value | 1) - 38) * -1171 >> 13;
+        return ((LeadingZeroCount((uint)value | 1) - 38) * -1171) >> 13;
     }
 
     private static int LeadingZeroCount(uint n)
     {
         if (n == 0) return 32;
-        int count = 0;
+        var count = 0;
         while ((n & 0x80000000) == 0)
         {
             n <<= 1;
             count++;
         }
+
         return count;
     }
 }

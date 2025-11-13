@@ -34,7 +34,7 @@ internal static class SocketExtensions
             var memory = new byte[1500].AsMemory();
             var writer = new MemoryWriter(memory);
 
-            writer.WriteByte((byte) packet.Identifier);
+            writer.WriteByte((byte)packet.Identifier);
             packet.Write(ref writer);
 
             return memory[..writer.Position];

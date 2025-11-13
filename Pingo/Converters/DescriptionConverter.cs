@@ -21,10 +21,9 @@ public class DescriptionConverter : JsonConverter<Description>
             case JsonTokenType.StartObject:
                 // Read through the object and get its properties accordingly
                 while (reader.Read())
-                {
                     if (reader.TokenType == JsonTokenType.PropertyName)
                     {
-                        string propertyName = reader.GetString();
+                        var propertyName = reader.GetString();
 
                         reader.Read();
 
@@ -45,7 +44,6 @@ public class DescriptionConverter : JsonConverter<Description>
                     {
                         break;
                     }
-                }
 
                 break;
         }
@@ -63,7 +61,6 @@ public class DescriptionConverter : JsonConverter<Description>
 
         // Читаем элементы массива
         while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
-        {
             // Если это строка, создаем ChatMessage с этой строкой как Text
             if (reader.TokenType == JsonTokenType.String)
             {
@@ -88,23 +85,20 @@ public class DescriptionConverter : JsonConverter<Description>
                     SkipToEndObject(ref reader);
                 }
             }
-        }
 
         return result.ToArray();
     }
 
     private void SkipToEndObject(ref Utf8JsonReader reader)
     {
-        int depth = 1;
+        var depth = 1;
 
         // Пропускаем все содержимое текущего объекта
         while (depth > 0 && reader.Read())
-        {
             if (reader.TokenType == JsonTokenType.StartObject)
                 depth++;
             else if (reader.TokenType == JsonTokenType.EndObject)
                 depth--;
-        }
     }
 
     public override void Write(Utf8JsonWriter writer, Description description, JsonSerializerOptions options)

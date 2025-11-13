@@ -2,8 +2,6 @@
 
 internal sealed class HandshakePacket : IOutgoingPacket
 {
-    public int Identifier => 0x00;
-
     public int ProtocolVersion { get; set; }
 
     public string Address { get; set; }
@@ -11,6 +9,7 @@ internal sealed class HandshakePacket : IOutgoingPacket
     public ushort Port { get; set; }
 
     public int NextState { get; set; }
+    public int Identifier => 0x00;
 
     public void Write(ref MemoryWriter writer)
     {

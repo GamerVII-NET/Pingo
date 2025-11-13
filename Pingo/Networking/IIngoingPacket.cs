@@ -2,7 +2,7 @@
 
 internal interface IIngoingPacket<out TSelf> where TSelf : IIngoingPacket<TSelf>
 {
-    public abstract int Identifier { get; }
+    public int Identifier { get; }
 
-    public abstract TSelf Read(MemoryReader reader);
+    public TSelf Read(MemoryReader reader);
 }

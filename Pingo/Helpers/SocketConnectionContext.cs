@@ -20,6 +20,10 @@ internal class SocketConnectionContext : ConnectionContext, IAsyncDisposable
 
     public override IDuplexPipe Transport { get; set; }
 
+    public override string ConnectionId { get; set; }
+    public override IFeatureCollection Features { get; }
+    public override IDictionary<object, object?> Items { get; set; }
+
     public async ValueTask DisposeAsync()
     {
         try
@@ -28,14 +32,10 @@ internal class SocketConnectionContext : ConnectionContext, IAsyncDisposable
         }
         catch (SocketException ex)
         {
-
         }
+
         socket.Close();
         socket.Dispose();
         await Task.CompletedTask;
     }
-
-    public override string ConnectionId { get; set; }
-    public override IFeatureCollection Features { get; }
-    public override IDictionary<object, object?> Items { get; set; }
 }

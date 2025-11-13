@@ -2,11 +2,10 @@
 
 internal sealed class UnconnectedPingPacket : IOutgoingPacket
 {
-    public int Identifier => 0x01;
-
     public long Time { get; set; }
 
     public long Client { get; set; }
+    public int Identifier => 0x01;
 
     public void Write(ref MemoryWriter writer)
     {

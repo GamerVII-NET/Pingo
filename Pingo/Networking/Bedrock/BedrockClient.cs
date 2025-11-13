@@ -10,6 +10,11 @@ namespace Pingo.Networking.Bedrock;
 
 internal sealed class BedrockClient(Socket socket) : IDisposable
 {
+    public void Dispose()
+    {
+        socket.Dispose();
+    }
+
     public async Task<BedrockStatus> PingAsync(CancellationToken cancellationToken)
     {
         await socket.WriteAsync(
@@ -40,10 +45,5 @@ internal sealed class BedrockClient(Socket socket) : IDisposable
             ServerIdentifier = long.Parse(format[6]),
             GameMode = format[8]
         };
-    }
-
-    public void Dispose()
-    {
-        socket.Dispose();
     }
 }

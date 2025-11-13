@@ -24,7 +24,7 @@ internal ref struct MemoryWriter(Memory<byte> memory)
 
     public void WriteBoolean(bool value)
     {
-        WriteByte((byte) (value ? 1 : 0));
+        WriteByte((byte)(value ? 1 : 0));
     }
 
     public void WriteShort(short value)
@@ -43,17 +43,14 @@ internal ref struct MemoryWriter(Memory<byte> memory)
 
     public void WriteVariableInteger(int value)
     {
-        var unsigned = (uint) value;
+        var unsigned = (uint)value;
 
         do
         {
-            var current = (byte) (unsigned & 127);
+            var current = (byte)(unsigned & 127);
             unsigned >>= 7;
 
-            if (unsigned != 0)
-            {
-                current |= 128;
-            }
+            if (unsigned != 0) current |= 128;
 
             span[Position++] = current;
         } while (unsigned != 0);
@@ -68,14 +65,11 @@ internal ref struct MemoryWriter(Memory<byte> memory)
 
     public void WriteSmallInteger(int value)
     {
-        if (!BitConverter.IsLittleEndian)
-        {
-            value = BinaryPrimitives.ReverseEndianness(value);
-        }
+        if (!BitConverter.IsLittleEndian) value = BinaryPrimitives.ReverseEndianness(value);
 
-        WriteByte((byte) value);
-        WriteByte((byte) (value >> 8));
-        WriteByte((byte) (value >> 16));
+        WriteByte((byte)value);
+        WriteByte((byte)(value >> 8));
+        WriteByte((byte)(value >> 16));
     }
 
     public void WriteEndPoint(IPEndPoint endPoint)
@@ -86,12 +80,9 @@ internal ref struct MemoryWriter(Memory<byte> memory)
 
             var parts = endPoint.Address.ToString().Split('.');
 
-            foreach (var part in parts)
-            {
-                span[Position++] = (byte) ~byte.Parse(part);
-            }
+            foreach (var part in parts) span[Position++] = (byte)~byte.Parse(part);
 
-            WriteUnsignedShort((ushort) endPoint.Port);
+            WriteUnsignedShort((ushort)endPoint.Port);
         }
         else
         {

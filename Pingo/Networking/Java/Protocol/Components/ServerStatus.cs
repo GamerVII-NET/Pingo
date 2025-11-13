@@ -7,8 +7,7 @@ internal sealed class ServerStatus
 {
     public ServerVersion Version { get; set; }
 
-    [JsonPropertyName("players")]
-    public PlayerInformation PlayerInformation { get; set; }
+    [JsonPropertyName("players")] public PlayerInformation PlayerInformation { get; set; }
 
     [JsonConverter(typeof(DescriptionConverter))]
     public Description? Description { get; set; }
@@ -18,8 +17,7 @@ internal sealed class ServerStatus
 
 public class Description
 {
-    [JsonPropertyName("text")]
-    public string Text { get; set; } = string.Empty;
+    [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
 
     [JsonPropertyName("extra")] public ChatMessage[] Extra { get; set; } = [];
 }
