@@ -1,4 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 using Pingo.Networking.Bedrock.Protocol;
 using Pingo.Networking.Bedrock.Protocol.Packets;
 using Pingo.Status;
@@ -7,18 +10,23 @@ namespace Pingo.Networking.Bedrock;
 
 internal sealed class BedrockClient(Socket socket) : IDisposable
 {
+    public void Dispose()
+    {
+        socket.Dispose();
+    }
+
     public async Task<BedrockStatus> PingAsync(CancellationToken cancellationToken)
     {
         await socket.WriteAsync(
             new UnconnectedPingPacket
             {
                 Time = DateTime.UtcNow.Millisecond,
-                Client = Random.Shared.Next()
+                Client = new Random().Next()
             },
             cancellationToken);
 
         var message = await socket.ReadAsync(cancellationToken);
-        var pong = message.As<UnconnectedPongPacket>();
+        var pong = message.As(new UnconnectedPongPacket());
 
         var format = pong.Message.Split(';');
 
@@ -37,10 +45,5 @@ internal sealed class BedrockClient(Socket socket) : IDisposable
             ServerIdentifier = long.Parse(format[6]),
             GameMode = format[8]
         };
-    }
-
-    public void Dispose()
-    {
-        socket.Dispose();
     }
 }

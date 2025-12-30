@@ -1,4 +1,7 @@
-﻿using System.Text.Json;
+﻿using System;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Connections;
 using Pingo.Networking.Java.Protocol;
 using Pingo.Networking.Java.Protocol.Components;
@@ -8,6 +11,11 @@ namespace Pingo.Networking.Java;
 
 internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposable
 {
+    public async ValueTask DisposeAsync()
+    {
+        await connection.DisposeAsync();
+    }
+
     public async Task<ServerStatus?> PingAsync(
         string address,
         ushort port,
@@ -25,23 +33,15 @@ internal sealed class JavaClient(ConnectionContext connection) : IAsyncDisposabl
             new StatusRequestPacket()
         ];
 
-        foreach (var packet in initial)
-        {
-            await connection.Transport.WriteAsync(packet);
-        }
+        foreach (var packet in initial) await connection.Transport.WriteAsync(packet);
 
         var message = await connection.Transport.ReadAsync(cancellationToken);
-        var response = message?.As<StatusResponsePacket>();
+        var response = message?.As(new StatusResponsePacket());
 
         return response is not null
             ? JsonSerializer.Deserialize(
                 response.Status,
                 SourceGenerationContext.Default.ServerStatus)
             : null;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await connection.DisposeAsync();
     }
 }

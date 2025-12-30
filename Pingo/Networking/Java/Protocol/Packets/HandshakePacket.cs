@@ -2,15 +2,14 @@
 
 internal sealed class HandshakePacket : IOutgoingPacket
 {
+    public int ProtocolVersion { get; set; }
+
+    public string Address { get; set; }
+
+    public ushort Port { get; set; }
+
+    public int NextState { get; set; }
     public int Identifier => 0x00;
-
-    public required int ProtocolVersion { get; init; }
-
-    public required string Address { get; init; }
-
-    public required ushort Port { get; init; }
-
-    public required int NextState { get; init; }
 
     public void Write(ref MemoryWriter writer)
     {
