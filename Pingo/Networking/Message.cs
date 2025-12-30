@@ -1,15 +1,23 @@
-﻿namespace Pingo.Networking;
+﻿using System;
 
-internal sealed record Message(int Identifier, ReadOnlyMemory<byte> Memory)
+namespace Pingo.Networking;
+
+internal sealed record Message
 {
-    public T As<T>() where T : IIngoingPacket<T>
+    public Message(int identifier, ReadOnlyMemory<byte> memory)
     {
-        if (T.Identifier != Identifier)
-        {
-            throw new InvalidOperationException($"Tried to read 0x{T.Identifier:X2} as 0x{Identifier:X2}.");
-        }
+        Identifier = identifier;
+        Memory = memory;
+    }
+
+    public int Identifier { get; }
+    public ReadOnlyMemory<byte> Memory { get; }
+
+    public T As<T>(T item) where T : IIngoingPacket<T>
+    {
+        if (item.Identifier != Identifier) throw new InvalidOperationException($"Tried to read as 0x{Identifier:X2}.");
 
         var reader = new MemoryReader(Memory);
-        return T.Read(reader);
+        return item.Read(reader);
     }
 }

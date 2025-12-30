@@ -1,4 +1,5 @@
-﻿using System.Buffers.Binary;
+﻿using System;
+using System.Buffers.Binary;
 using System.Net;
 using System.Text;
 
@@ -50,14 +51,11 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
             read = span[position++];
 
             var value = read & 0b01111111;
-            result |= value << 7 * numbersRead;
+            result |= value << (7 * numbersRead);
 
             numbersRead++;
 
-            if (numbersRead > 5)
-            {
-                throw new InvalidOperationException("Variable integer is too big.");
-            }
+            if (numbersRead > 5) throw new InvalidOperationException("Variable integer is too big.");
         } while ((read & 0b10000000) != 0);
 
         return result;
@@ -71,7 +69,7 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
 
     public int ReadSmallInteger()
     {
-        var value = ReadByte() | ReadByte() << 8 | ReadByte() << 16;
+        var value = ReadByte() | (ReadByte() << 8) | (ReadByte() << 16);
 
         return BitConverter.IsLittleEndian
             ? value
@@ -89,10 +87,10 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
         {
             case 4:
             {
-                address = IPAddress.Parse($"{(byte) ~ReadByte()}."
-                                          + $"{(byte) ~ReadByte()}."
-                                          + $"{(byte) ~ReadByte()}."
-                                          + $"{(byte) ~ReadByte()}");
+                address = IPAddress.Parse($"{(byte)~ReadByte()}."
+                                          + $"{(byte)~ReadByte()}."
+                                          + $"{(byte)~ReadByte()}."
+                                          + $"{(byte)~ReadByte()}");
 
                 port = ReadUnsignedShort();
                 break;
@@ -128,8 +126,6 @@ internal ref struct MemoryReader(ReadOnlyMemory<byte> memory)
         };
 
         if (!span[position..(position += magic.Length)].SequenceEqual(magic))
-        {
             throw new InvalidOperationException("Invalid magic.");
-        }
     }
 }

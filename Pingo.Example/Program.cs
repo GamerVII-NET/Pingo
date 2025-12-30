@@ -3,7 +3,7 @@ using Pingo.Status;
 
 var options = new MinecraftPingOptions
 {
-    Address = "127.0.0.1",
+    Address = "applecraft.online",
     Port = 25565
 };
 
@@ -15,6 +15,6 @@ if (status is BedrockStatus bedrock)
 }
 else
 {
-    var java = (JavaStatus?) status;
+    var java = (JavaStatus?)status;
     Console.WriteLine(string.Join(", ", java!.MessagesOfTheDay));
 }

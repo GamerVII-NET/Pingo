@@ -1,25 +1,36 @@
-﻿namespace Pingo.Networking.Java.Protocol.Components;
+﻿using System.Text.Json.Serialization;
+using Pingo.Converters;
 
-internal sealed class ChatMessage
+namespace Pingo.Networking.Java.Protocol.Components;
+
+public sealed class ChatMessage
 {
-    public string Text { get; set; } = string.Empty;
+    [JsonPropertyName("text")] public string Text { get; set; } = string.Empty;
 
-    public bool Bold { get; set; }
+    [JsonPropertyName("bold")] public bool Bold { get; set; }
 
-    public bool Italic { get; set; }
+    [JsonPropertyName("italic")] public bool Italic { get; set; }
 
-    public bool Underlined { get; set; }
+    [JsonPropertyName("underlined")] public bool Underlined { get; set; }
 
-    public bool StrikeThrough { get; set; }
+    [JsonPropertyName("strikeThrough")] public bool StrikeThrough { get; set; }
 
-    public bool Obfuscated { get; set; }
+    [JsonPropertyName("obfuscated")] public bool Obfuscated { get; set; }
 
+    [JsonConverter(typeof(ColorConverter))]
+    [JsonPropertyName("color")]
     public Color Color { get; set; } = Color.White;
 
-    public ChatMessage[]? Extra { get; set; }
+    // Это свойство будет десериализовать вложенные объекты
+    [JsonPropertyName("extra")] public ChatMessage[]? Extra { get; set; }
+
+    public static ChatMessage FromString(string text)
+    {
+        return new ChatMessage { Text = text };
+    }
 }
 
-internal enum Color
+public enum Color
 {
     Black,
     DarkBlue,
