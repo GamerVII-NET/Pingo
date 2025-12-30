@@ -3,7 +3,15 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
+    <LangVersion>latest</LangVersion>        
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2025.3.3</Version>
+    <Title>Gml.Pingo</Title>
+    <Description>A simple library to ping Minecraft: Java/Bedrock edition servers that supports almost all versions.</Description>
+    <Copyright>Recloud LLC</Copyright>
+    <PackageProjectUrl>https://github.com/GamerVII-NET/Pingo</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GamerVII-NET/Pingo</RepositoryUrl>
+    <PackageTags>Minecraft, Ping</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
